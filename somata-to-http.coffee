@@ -9,7 +9,12 @@ polar = require 'polar'
 client = new somata.Client
 Service = client.bindRemote SERVICE
 
-app = polar {port: PORT}
+cors_middleware = (req, res, next) ->
+    res.setHeader 'Access-Control-Allow-Origin', '*'
+    res.setHeader 'Access-Control-Allow-Headers', 'Content-Type, token'
+    next()
+
+app = polar {port: PORT, middleware: [cors_middleware]}
 
 app.post '/:method', (req, res) ->
     method = req.params.method
