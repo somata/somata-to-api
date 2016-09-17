@@ -13,7 +13,7 @@ app = polar {port: PORT}
 
 app.post '/:method', (req, res) ->
     method = req.params.method
-    args = req.body.args
+    args = req.body
     Service method, args..., (err, got) ->
         if err
             res.send 500, err
