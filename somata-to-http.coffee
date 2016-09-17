@@ -1,13 +1,12 @@
-[SERVICE, PORT] = process.argv.slice(2)
-if !SERVICE or !PORT
-    console.log "Usage: somata-to-http.coffee [service name] [http port]"
+PORT = process.argv[2]
+if !PORT
+    console.log "Usage: somata-to-http.coffee [http port]"
     process.exit()
 
 somata = require 'somata'
 polar = require 'polar'
 
 client = new somata.Client
-Service = client.bindRemote SERVICE
 
 cors_middleware = (req, res, next) ->
     res.setHeader 'Access-Control-Allow-Origin', '*'
@@ -16,10 +15,10 @@ cors_middleware = (req, res, next) ->
 
 app = polar {port: PORT, middleware: [cors_middleware]}
 
-app.post '/:method', (req, res) ->
-    method = req.params.method
+app.post '/:service/:method', (req, res) ->
+    {service, method} = req.params
     args = req.body
-    Service method, args..., (err, got) ->
+    client.remote service, method, args..., (err, got) ->
         if err
             res.send 500, err
         else
